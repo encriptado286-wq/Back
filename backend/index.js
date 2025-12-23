@@ -6,6 +6,7 @@ import path from "path";
 
 import alumnosRouter from "./rutas/alumnos.js";
 import registrosRouter from "./rutas/registros.js";
+import pool from "./db.js"; // Importar la conexión a la DB
 
 dotenv.config();
 
@@ -25,9 +26,19 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/alumnos", alumnosRouter);
 app.use("/api/registros", registrosRouter);
 
-// Ruta test
+// Ruta test principal
 app.get("/", (req, res) => {
   res.send("✅ Backend funcionando en Render 🚀");
+});
+
+// ✅ Nueva ruta para testear conexión a PostgreSQL
+app.get("/test-db", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({ success: true, now: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // ⚠️ IMPORTANTE PARA RENDER
