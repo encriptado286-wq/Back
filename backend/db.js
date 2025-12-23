@@ -1,36 +1,18 @@
 import pkg from "pg";
 const { Pool } = pkg;
 
-// Leer variables de entorno específicas para Render
-const {
-  DB_HOST,
-  DB_USER,
-  DB_PASSWORD,
-  DB_NAME,
-  DB_PORT
-} = process.env;
-
-console.log("Conectando a PostgreSQL con los siguientes datos:");
-console.log("Host:", DB_HOST);
-console.log("Usuario:", DB_USER);
-console.log("Database:", DB_NAME);
-console.log("Puerto:", DB_PORT);
-
+// Usar la Internal Database URL de Render
 const pool = new Pool({
-  host: DB_HOST,
-  user: DB_USER,
-  password: DB_PASSWORD,
-  database: DB_NAME,
-  port: DB_PORT || 5432,
-  ssl: { rejectUnauthorized: false }, // Render requiere SSL
+  connectionString: process.env.DATABASE_URL || 
+    "postgresql://particulares_db_kog5_user:5N1Jmr2ktNC0MosPezKLqhCU2XaQl8fv@dpg-d54nmnv5r7bs73ej60t0-a/particulares_db_kog5",
+  ssl: { rejectUnauthorized: false }, // necesario en Render
 });
 
 pool
   .connect()
-  .then(() => console.log("✅ Conectado a PostgreSQL en Render"))
-  .catch((err) => {
-    console.error("❌ Error de conexión PostgreSQL:", err.message);
-    console.error("Detalles completos:", err);
-  });
+  .then(() => console.log("✅ Conectado a PostgreSQL"))
+  .catch((err) =>
+    console.error("❌ Error de conexión PostgreSQL:", err)
+  );
 
 export default pool;
